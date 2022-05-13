@@ -32,11 +32,6 @@ def main():
         if data != name:
             # compare
             print(data)
-    # for data in people[name]:
-    #     print(data)
-
-    # for person in people:
-    #     print(people[person])
 
 
 def friends(name):
