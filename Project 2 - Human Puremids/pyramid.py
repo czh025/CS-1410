@@ -48,16 +48,14 @@ def weight_on(r, c, count=0, cache_hits_count=0, weight=200.0):
             # leftmost person
             previous_row = weight_on(r - 1, c, count, cache_hits_count)
             total += round((weight + previous_row[0]) / 2, 2)
-            cache_hits_count += previous_row[2]
             cache[(r, c)] = total
-            return [total, previous_row[1], cache_hits_count]
+            return [total, previous_row[1], cache_hits_count + previous_row[2]]
         elif r == c:
             # rightmost person
             previous_row = weight_on(r - 1, c - 1, count, cache_hits_count)
             total += round((weight + previous_row[0]) / 2, 2)
-            cache_hits_count += previous_row[2]
             cache[(r, c)] = total
-            return [total, previous_row[1], cache_hits_count]
+            return [total, previous_row[1], cache_hits_count + previous_row[2]]
         else:
             # people in interior
             previous_row_left = weight_on(r - 1, c - 1, count, cache_hits_count)
