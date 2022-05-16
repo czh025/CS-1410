@@ -99,6 +99,7 @@ def main():
     file.write(f"Elapsed time: {(time_stop - time_start):.20f} seconds\n")
     file.write(f"Number of function calls: {function_calls_times}\n")
     file.write(f"Number of cache hits: {cache_hits_times}")
+    file.close()
 
 
 if __name__ == "__main__":
