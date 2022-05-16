@@ -36,6 +36,7 @@ def weight_on(r, c, count=0, cache_hits_count=0, weight=200.0):
     global cache
     total = 0.0
     count += 1
+    # if False: do not use cache
     if cache.get((r, c)) is not None:
         cache_hits_count += 1
         return [cache[(r, c)], count, cache_hits_count]
