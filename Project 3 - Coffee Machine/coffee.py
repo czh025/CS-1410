@@ -10,12 +10,21 @@ program would need to know to make it run.
 
 
 class CoffeeMachine:
-    def __init__(self):
-        self.__cashBox = 0
-        self.__selector = None
+    products = (
+        ("black", 35, "coffee"),
+        ("white", 35, "coffee", "creamer"),
+        ("sweet", 35, "coffee", "sugar"),
+        ("white & sweet", 35, "coffee", "sugar", "creamer"),
+        ("bouillon", 25, "bouillonPowder")
+    )
 
+    def __init__(self):
+        self.cashBox = CashBox()
+        self.selector = Selector(self.cashBox, CoffeeMachine.products)
 
     def oneAction(self):
+        print("")
+        print("_" * 40)
         print("PRODUCT LIST: all 35 cents, except bouillon (25 cents)")
         print("1=black, 2=white, 3=sweet, 4=while & sweet, 5=bouillon")
         print("Sample commands: insert 25, select 1.")
@@ -23,33 +32,22 @@ class CoffeeMachine:
         user_input = input("Your command: \u001b[1m").lower()
         print('\u001b[0m', end='')
 
-        if "insert" in user_input:
+        if "insert" in user_input and " " in user_input:
             insert_cash = user_input.split()[1]
-            if insert_cash == "50" or insert_cash == "25" or insert_cash == "10" or insert_cash == "5":
-                self.__cashBox += int(insert_cash)
-                print(f"Depositing {insert_cash}. You have {self.__cashBox} cents credit.")
-                self.totalCash()
-            else:
-                print("INPUT ERROR >>>")
-                print("We only take half-dollars, quarters, dimes, and nickels.")
-                print("Coin(s) returned")
-                return True
+            self.cashBox.deposit(insert_cash)
         elif "select" in user_input:
             item_index = int(user_input.split()[1])
-            s = Selector(self.__cashBox)
-            s.select(item_index)
+            self.selector.select(item_index)
         elif user_input == "cancel":
-            print("cancel")
+            self.cashBox.returnCoins()
         elif user_input == "quit":
             return False
         else:
             print("Invalid command.")
         return True
 
-
     def totalCash(self):
-        b = CashBox()
-        b.deposit(self.__cashBox)
+        return self.cashBox.total()
 
 
 class CashBox:
@@ -57,106 +55,85 @@ class CashBox:
         self.__credit = 0
         self.__totalReceived = 0
 
-
     def deposit(self, amount):
         """
         amount: int
         """
-        self.__credit += amount
-        self.__totalReceived += amount
-        print("999aaa", self.__totalReceived, self.__credit)
-
+        if amount not in ("50", "25", "10", "5"):
+            print("INPUT ERROR >>>")
+            print("We only take half-dollars, quarters, dimes, and nickels.")
+            print("Coin(s) returned")
+            return
+        self.__credit += int(amount)
+        print(f"Depositing {amount}. You have {self.__credit} cents credit.")
 
     def returnCoins(self):
-        print(f"Returning {self.__credit} cents.")
-
+        if self.__credit != 0:
+            print(f"Returning {self.__credit} cents.")
+            self.__credit = 0
 
     def haveYou(self, amount):
         """
-        determine if user have enough money
         return bool
         """
-        print(self.__credit, self.__totalReceived, amount)
-        return True if self.__credit >= amount else False
-
+        return self.__credit >= amount
 
     def deduct(self, amount):
-        print("sdasddfasf", self.__totalReceived, self.__credit)
         self.__credit -= amount
-
+        self.__totalReceived += amount
 
     def total(self):
         """
         return int
         """
-        print("here", self.__credit, self.__totalReceived)
-        pass
+        return self.__totalReceived
 
 
 class Selector:
-    def __init__(self, cashBox):
-        self.__cashBox = cashBox
-        self.__products = ["black", "white", "sweet", "white & sweet", "bouillon"]
-
+    def __init__(self, cash_box, products):
+        self.__cashBox = cash_box
+        self.__products = products
 
     def select(self, choiceIndex):
         """
         choiceIndex: int
         """
-        p = Product(self.__products[choiceIndex - 1], self.__cashBox)
+        if choiceIndex > 5 or choiceIndex < 0:
+            print("Invalid choice.")
+            return
+        p = Product(self.__products[choiceIndex - 1][0], self.__products[choiceIndex - 1][1],
+                    self.__products[choiceIndex - 1][2:])
         drink_price = p.getPrice()
-        b = CashBox()
-        is_enough_credit = b.haveYou(drink_price)
+        is_enough_credit = self.__cashBox.haveYou(drink_price)
         if is_enough_credit:
             p.make()
-            b.deduct(drink_price)
-            b.returnCoins()
+            self.__cashBox.deduct(drink_price)
+            self.__cashBox.returnCoins()
         else:
             print("Sorry. Not enough money deposited.")
 
 
 class Product:
-    def __init__(self, name, price):
+    def __init__(self, name, price, recipe):
         self.__name = name
         self.__price = price
-        self.__recipe = []
-
+        self.__recipe = recipe
 
     def getPrice(self):
         """
-        Abstraction of the drink
-        Responsible for knowing its price and recipe
-
         return int
         """
-        if self.__name == "bouillon":
-            self.__recipe.append("cup")
-            self.__recipe.append("bouillonPowder")
-            self.__recipe.append("water")
-            return 25
-        else:
-            self.__recipe.append("cup")
-            self.__recipe.append("coffee")
-            if self.__name == "black":
-                pass
-            elif self.__name == "white":
-                self.__recipe.append("creamer")
-            elif self.__name == "sweet":
-                self.__recipe.append("sugar")
-            else:
-                self.__recipe.append("sugar")
-                self.__recipe.append("creamer")
-            self.__recipe.append("water")
-            return 35
-
+        return self.__price
 
     def make(self):
         """
         Dispenses the drink
         """
-        print(f"Making {self.__name}")
+        print(f"Making {self.__name}:")
+        print("      Dispensing cup")
         for item in self.__recipe:
             print(f"      Dispensing {item}")
+        print("      Dispensing water")
 
 
 def main():
@@ -165,9 +142,9 @@ def main():
     """
     m = CoffeeMachine()
     while m.oneAction():
-        print("")
+        pass
     total = m.totalCash()
-    print(f"Total cash: ${total/100:.2f}")
+    print(f"Total cash: ${total / 100:.2f}")
 
 
 if __name__ == "__main__":
