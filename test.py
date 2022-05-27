@@ -1,24 +1,17 @@
-class CelestialBody:
-    """Represents a celestial body"""
-    def __init__(self, name, diameter, distance, moons):
-        self.name = name
-        self.diameter = diameter
-        self.distance = distance
-        self.moons = moons
+class A:
+    def __init__(self):
+        self.setI(20)
+
+    def setI(self, i):
+        self.i = 2 * i;
+
+class B(A):
+    def __init__(self):
+        super().__init__()
+        print("i from B is", self.i)
         
-    @classmethod
-    def make_earth(cls):
-        return CelestialBody("Earth", 12756.3, 149600000, 1)
+    def setI(self, i):
+        self.i = 3 * i;
 
-    @staticmethod
-    def closer_to_sun(body1, body2):
-        """Returns the name of the body
-        that is closest to the sun"""
-        if body1.distance < body2.distance:
-            return body1.name
-        else:
-            return body2.name
 
-a = CelestialBody.make_earth()
-b = CelestialBody.make_earth()
-print(CelestialBody.closer_to_sun(a, b))
+b = B()
