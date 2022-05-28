@@ -1,17 +1,48 @@
-class A:
-    def __init__(self):
-        self.setI(20)
+# Python program showing
+# abstract base class work
 
-    def setI(self, i):
-        self.i = 2 * i;
+# from abc import ABC, abstractmethod
 
-class B(A):
-    def __init__(self):
-        super().__init__()
-        print("i from B is", self.i)
-        
-    def setI(self, i):
-        self.i = 3 * i;
+# class Polygon(ABC):
 
+# 	@abstractmethod
+# 	def noofsides(self):
+# 		pass
 
-b = B()
+class Triangle(Polygon):
+
+	# overriding abstract method
+	def noofsides(self):
+		print("I have 3 sides")
+
+class Pentagon(Polygon):
+
+	# overriding abstract method
+	def noofsides(self):
+		print("I have 5 sides")
+
+class Hexagon(Polygon):
+
+	# overriding abstract method
+	def noofsides(self):
+		print("I have 6 sides")
+
+class Quadrilateral(Polygon):
+
+	# overriding abstract method
+	def noofsides(self):
+		print("I have 4 sides")
+
+# Driver code
+R = Triangle()
+R.noofsides()
+
+K = Quadrilateral()
+K.noofsides()
+
+R = Pentagon()
+R.noofsides()
+
+K = Hexagon()
+K.noofsides()
+
