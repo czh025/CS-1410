@@ -7,21 +7,22 @@ Course: CS1410-X01
 Put your description here, lessons learned here, and any other information someone using your
 program would need to know to make it run.
 """
-
-from payroll import *
-from abc import abstractmethod, ABC
-import os
 import os.path
-import shutil
+from abc import abstractmethod, ABC
 
 PAY_LOGFILE = "paylog.txt"
-TIMECARD_FILE = "timecards.csv"
-SALES_FILE = "receipts.csv"
-PAY_LOGFILE = "paylog.txt"
+TIMECARDS_FILE = "timecards.csv"
+RECEIPTS_FILE = "receipts.csv"
+EMPLOYEE_FILE = "employees.csv"
+
+employees = []
 
 
 def find_employee_by_id(emp_id):
-    pass
+    for emp in employees:
+        if emp.emp_id == emp_id:
+            return emp
+    raise Exception("No such an employees.")
 
 
 class Employee:
@@ -35,17 +36,18 @@ class Employee:
         self.zipcode = zipcode
         self.classification = classification
 
-    def make_salaried(self, period):
-        pass
+    def make_salaried(self, salary):
+        self.classification = Salaried(salary)
 
-    def make_commissioned(self, sales, rate):
-        pass
+    def make_commissioned(self, salary, rate):
+        self.classification = Commissioned(salary, rate)
 
-    def make_hourly(self, hours):
-        pass
+    def make_hourly(self, rate):
+        self.classification = Hourly(rate)
 
     def issue_payment(self):
-        pass
+        salary = self.classification.compute_pay()
+#         TODO
 
 
 class Classification(ABC):
@@ -59,19 +61,21 @@ class Salaried(Classification):
         self.salary = salary
 
     def compute_pay(self):
-        pass
+        return round(self.salary / 24, 2)
 
 
 class Hourly(Classification):
-    def __init__(self, hour_rate, timecards):
+    def __init__(self, hour_rate):
         self.hour_rate = hour_rate
-        self.timecards = timecards
+        self.timecards = []
 
     def compute_pay(self):
-        pass
+        salary = round(sum(self.timecards) * self.hour_rate, 2)
+        self.timecards.clear()
+        return salary
 
-    def add_timecard(self):
-        pass
+    def add_timecard(self, hours):
+        self.timecards.append(hours)
 
 
 class Commissioned(Salaried):
@@ -81,54 +85,54 @@ class Commissioned(Salaried):
         self.receipts = []
 
     def compute_pay(self):
-        pass
+        salary = round(self.salary / 24 + sum(self.receipts) * self.commission_rate / 100, 2)
+        self.receipts.clear()
+        return salary
 
-    def add_receipt(self):
-        pass
+    def add_receipt(self, receipt):
+        self.receipts.append(receipt)
 
 
-def main():
-    def load_employees():
-        pass
+def load_employees():
+    """
+    EMPLOYEE_FILE's info:
+    id, first_name, last_name, address, city, state, zipcode, classification, salary, commission, hourly
 
-    def process_timecards():
-        pass
+    classification 1: salary
+    classification 2: commission
+    classification 3: hourly
+    """
+    with open(EMPLOYEE_FILE, "r") as emp_f:
+        emp_f.readline()
+        for line in emp_f:
+            info = line.rstrip().split(",")
+            # emp_id = info[0]
+            # first_name = info[1]
+            # last_name = info[2]
+            # addr = info[3]
+            # city = info[4]
+            # state = info[5]
+            # zipcode = info[6]
+            classification = int(info[7])
+            salary = float(info[8])
+            commission = float(info[9])
+            hourly = float(info[10])
+            employee_classification = Salaried(salary) if classification == 1 else \
+                Commissioned(salary, commission) if classification == 2 else Hourly(hourly)
+            # employees.append(Employee(emp_id, first_name, last_name, addr, city, state, zipcode, classification))
+            employees.append(Employee(*info[:7], employee_classification))
 
-    def process_receipts():
-        pass
 
-    def run_payroll():
-        pass
+def process_timecards():
+    pass
 
-    # Save copy of payroll file; delete old file
-    shutil.copyfile(PAY_LOGFILE, 'paylog_old.txt')
+
+def process_receipts():
+    pass
+
+
+def run_payroll():
     if os.path.exists(PAY_LOGFILE):
         os.remove(PAY_LOGFILE)
-
-    # Change Issie Scholard to Salaried by changing the Employee object:
-    emp = find_employee_by_id('51-4678119')
-    emp.make_salaried(134386.51)
-    emp.issue_payment()
-
-    # Change Reynard,Lorenzin to Commissioned; add some receipts
-    emp = find_employee_by_id('11-0469486')
-    emp.make_commissioned(50005.50, 27)
-    clas = emp.classification
-    clas.add_receipt(1109.73)
-    clas.add_receipt(746.10)
-    emp.issue_payment()
-
-    # Change Jed Netti to Hourly; add some hour entries
-    emp = find_employee_by_id('68-9609244')
-    emp.make_hourly(47)
-    clas = emp.classification
-    clas.add_timecard(8.0)
-    clas.add_timecard(8.0)
-    clas.add_timecard(8.0)
-    clas.add_timecard(8.0)
-    clas.add_timecard(8.0)
-    emp.issue_payment()
-
-
-if __name__ == '__main__':
-    main()
+    for emp in employees:
+        emp.issue_payment()
