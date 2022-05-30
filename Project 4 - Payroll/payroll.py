@@ -4,8 +4,12 @@ Author: Zhihui Chen
 Due Date: 06/09/2022
 Course: CS1410-X01
 
-Put your description here, lessons learned here, and any other information someone using your
-program would need to know to make it run.
+in order for this program to work, paylog.txt, timecards.csv, receipts.csv, and employees.csv are needed
+this program can calculate the salaries of different types of employees
+finally saves the information of employees who need to be paid into a file
+
+through this program, I learn how to use abstract method
+this program also deepened my understanding of class
 """
 import os.path
 from abc import abstractmethod, ABC
@@ -19,6 +23,9 @@ employees = []
 
 
 def find_employee_by_id(emp_id):
+    """
+    Find employee by id, throw an error if there is no matching ID
+    """
     for emp in employees:
         if emp.emp_id == emp_id:
             return emp
@@ -27,6 +34,10 @@ def find_employee_by_id(emp_id):
 
 class Employee:
     def __init__(self, emp_id, first_name, last_name, address, city, state, zipcode, classification):
+        """
+        emp_id will be used to match data
+            and classification will add components from other function, so keep these public
+        """
         self.emp_id = emp_id
         self.__first_name = first_name
         self.__last_name = last_name
@@ -61,9 +72,15 @@ class Classification(ABC):
 
 class Salaried(Classification):
     def __init__(self, salary):
+        """
+        salary will be inherited to Commissioned class, so keep it public
+        """
         self.salary = salary
 
     def compute_pay(self):
+        """
+        return float
+        """
         return round(self.salary / 24, 2)
 
 
@@ -73,6 +90,10 @@ class Hourly(Classification):
         self.__timecards = []
 
     def compute_pay(self):
+        """
+        clear employee timecard, after computing salary
+        return float
+        """
         salary = round(sum(self.__timecards) * self.__hour_rate, 2)
         self.__timecards.clear()
         return salary
@@ -88,6 +109,10 @@ class Commissioned(Salaried):
         self.__receipts = []
 
     def compute_pay(self):
+        """
+        clear employee receipts, after computing salary
+        return float
+        """
         salary = round(self.salary / 24 + sum(self.__receipts) * self.__commission_rate / 100, 2)
         self.__receipts.clear()
         return salary
@@ -98,8 +123,9 @@ class Commissioned(Salaried):
 
 def load_employees():
     """
+    skip the first line, process raw data
     EMPLOYEE_FILE's info:
-    id, __first_name, __last_name, __address, __city, __state, __zipcode, classification, salary, commission, hourly
+    id, first_name, last_name, address, city, state, zipcode, classification, salary, commission, hourly
 
     classification 1: salary
     classification 2: commission
@@ -119,6 +145,9 @@ def load_employees():
 
 
 def process_timecards():
+    """
+    processing of raw data into a timecard list
+    """
     with open(TIMECARDS_FILE, "r") as timecard_f:
         for line in timecard_f:
             info = line.strip().split(",")
@@ -131,6 +160,9 @@ def process_timecards():
 
 
 def process_receipts():
+    """
+    processing of raw data into a receipt list
+    """
     with open(RECEIPTS_FILE, "r") as receipts_f:
         for line in receipts_f:
             info = line.strip().split(",")
