@@ -17,7 +17,7 @@ class CoffeeMachine:
     PRODUCTS: a list of products, should not be changed
 
     one_action: accept user's input until user enter quit
-    totalCash: return total cash that user spend
+    total_cash: return total cash that user spend
     """
     PRODUCTS = (
         ("black", 35, "coffee"),
@@ -32,6 +32,10 @@ class CoffeeMachine:
         self.selector = Selector(self.cashBox, CoffeeMachine.PRODUCTS)
 
     def one_action(self):
+        """
+        repeat help
+        execute different methods depending on the user's input
+        """
         print("")
         print("_" * 40)
         print("PRODUCT LIST: all 35 cents, except bouillon (25 cents)")
@@ -61,7 +65,11 @@ class CoffeeMachine:
             print("Invalid command.")
         return True
 
-    def totalCash(self):
+    def total_cash(self):
+        """
+        return int
+        total cash that user spent
+        """
         return self.cashBox.total()
 
 
@@ -78,9 +86,10 @@ class CashBox:
     deduct: Reduce user balance after purchase
     total: return total cash that user spend
     """
+
     def __init__(self):
         self.__credit = 0
-        self.__totalReceived = 0
+        self.__total_received = 0
 
     def deposit(self, amount):
         """
@@ -94,6 +103,10 @@ class CashBox:
         print(f"Depositing {amount} cents. You have {self.__credit} cents credit.")
 
     def return_coins(self):
+        """
+        If the user's credit is greater than 0,
+            the credit will be returned and the credit will be cleared
+        """
         if self.__credit != 0:
             print(f"Returning {self.__credit} cents.")
             self.__credit = 0
@@ -105,36 +118,48 @@ class CashBox:
         return self.__credit >= amount
 
     def deduct(self, amount):
+        """
+        subtract the amount left by the user
+        add the amount spent to total_received
+        """
         self.__credit -= amount
-        self.__totalReceived += amount
+        self.__total_received += amount
 
     def total(self):
         """
         return int
         """
-        return self.__totalReceived
+        return self.__total_received
 
 
 class Selector:
     """
-    select: If the user enters the correct product, the information about the product that the user needs is extracted from the products
+    select: If the user enters the correct product,
+        the information about the product that the user needs is extracted from the products
     """
+
     def __init__(self, cash_box, products):
-        self.__cashBox = cash_box
+        self.__cash_box = cash_box
         self.__products = products
 
-    def select(self, choiceIndex):
-        if choiceIndex > 5 or choiceIndex < 0:
+    def select(self, choice_index):
+        """
+        __products[0]: product's name
+        __products[1]: product's price
+        __products[2:]: product's materials
+        """
+        if choice_index > 5 or choice_index < 0:
             print("Invalid choice.")
             return
-        p = Product(self.__products[choiceIndex - 1][0], self.__products[choiceIndex - 1][1],
-                    self.__products[choiceIndex - 1][2:])
-        drink_price = p.get_price()
-        is_enough_credit = self.__cashBox.have_you(drink_price)
+        product_detail = Product(self.__products[choice_index - 1][0],
+                                 self.__products[choice_index - 1][1],
+                                 self.__products[choice_index - 1][2:])
+        drink_price = product_detail.get_price()
+        is_enough_credit = self.__cash_box.have_you(drink_price)
         if is_enough_credit:
-            p.make()
-            self.__cashBox.deduct(drink_price)
-            self.__cashBox.return_coins()
+            product_detail.make()
+            self.__cash_box.deduct(drink_price)
+            self.__cash_box.return_coins()
         else:
             print("Sorry. Not enough money deposited.")
 
@@ -144,6 +169,7 @@ class Product:
     get_price: return price of product which user chose
     make: start to make drink
     """
+
     def __init__(self, name, price, recipe):
         self.__name = name
         self.__price = price
@@ -173,7 +199,7 @@ def main():
     m = CoffeeMachine()
     while m.one_action():
         pass
-    total = m.totalCash()
+    total = m.total_cash()
     print(f"Total cash received: ${total / 100:.2f}")
 
 
