@@ -41,34 +41,46 @@ def process_data(raw_data):
 def analyze(f_name):
     raw_data = np.loadtxt(f_name)
     data = process_data(raw_data)
-    pulses = find_pulses(data, [], 0)
-    print(f"{f_name}:")
-    for i in range(len(pulses)):
-        start_pulse = pulses[i]
-        pulse_range = PULSE_NUMBER
-        # avoid double counting of area
-        if i < len(pulses) - 1 and pulses[i] + pulse_range > pulses[i + 1]:
-            pulse_range = pulses[i + 1] - start_pulse
-        pulse_range = min(pulse_range, len(data) - start_pulse)
-        area = int(sum(raw_data[start_pulse:start_pulse + pulse_range]))
-        print(f"Pulse {i + 1}: {start_pulse} ({area})")
+    save_to_pdf(raw_data, data, f_name)
+    save_to_out(raw_data, data, f_name)
 
+
+def save_to_pdf(raw_data, smooth_data, file_name):
+    fig, axs = plt.subplots(2)
+
+    axs[0].plot(raw_data, lw=.2)
+    axs[0].set(title=file_name, ylabel="raw")
+    axs[0].axes.get_xaxis().set_visible(False)
+
+    axs[1].plot(smooth_data, lw=.3)
+    axs[1].set(ylabel="smooth")
+
+    # plt.show()
+    plt.savefig(f"{file_name[:-4]}.pdf")
+
+
+def save_to_out(raw_data, smooth_data, file_name):
+    pulses = find_pulses(smooth_data, [], 0)
+    with open(f"{file_name[:-4]}.out", "w", encoding="utf-8") as write_f:
+        write_f.write(f"{file_name}:\n")
+        for i in range(len(pulses)):
+            start_pulse = pulses[i]
+            pulse_range = PULSE_NUMBER
+            # avoid double counting of area
+            if i < len(pulses) - 1 and pulses[i] + pulse_range > pulses[i + 1]:
+                pulse_range = pulses[i + 1] - start_pulse
+            pulse_range = min(pulse_range, len(smooth_data) - start_pulse)
+            area = int(sum(raw_data[start_pulse:start_pulse + pulse_range]))
+            write_f.write(f"Pulse {i + 1}: {start_pulse} ({area})\n")
 
 def main():
     """
     Program starts here.
     """
-    sys.setrecursionlimit(5000)
-    # plt.figure(figsize=(48, 27))
+    # set maximum recursion limit to 10000
+    sys.setrecursionlimit(10000)
     for f_name in glob.glob("*dat"):
         analyze(f_name)
-    # t = np.arange(0., 5., 0.2)
-    # plt.plot(t, t, 'rs', t, t ** 2, 'bs', t, t ** 3, 'g^')
-    #
-    # # print(t)
-    # # plt.plot([1, 2, 3, 4], [2, 3, 3, 2])
-    # plt.ylabel("some numbers")
-    # plt.show()
 
 
 if __name__ == "__main__":
