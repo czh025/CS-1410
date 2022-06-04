@@ -22,7 +22,7 @@ PULSE_NUMBER = 50
 
 def find_pulses(data, pulses, index=0):
     """
-    use the recursion to find the data where is great then VT, save the index to pulses,
+    use the recursion to find the data where is greater than VT, save the index to pulses,
     then skip the continuous rising data until a descending data appears, starts the next recursion
     return list
     """
