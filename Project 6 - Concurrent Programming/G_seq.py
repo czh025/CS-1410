@@ -4,10 +4,7 @@ Author: Zhihui Chen
 Due Date: 06/23/2022
 Course: CS1410-X01
 
-Put your description here, lessons learned here, and any other information someone using your
-program would need to know to make it run.
-
-Download sequentially (no concurrency)
+This program download imgs sequentially (no concurrency)
 """
 
 import requests
@@ -16,6 +13,11 @@ import os
 
 
 def download_img(flag):
+    """
+    flag: str, name of country flag
+    download img
+    return int, img size
+    """
     url = f"https://www.sciencekids.co.nz/images/pictures/flags96/{flag}.jpg"
     img = requests.get(url).content
     with open(f"G_seq/{flag}.jpg", "wb") as img_f:
@@ -25,7 +27,11 @@ def download_img(flag):
 
 def main():
     """
-    Program starts here.
+    if G_seq folder does not exist, create it
+
+    read flags.txt file,
+    save total download img size
+    write result to G_seq_result.txt
     """
     img_bytes = 0
 

@@ -1,6 +1,16 @@
-import imp
-import numpy as np
-import array
-a = np.ones(3, dtype=np.int32)
-print(a)
+class A:
+    def __init__(self):
+        self.setI(10)
 
+    def setI(self, i):
+        self.i = 2 * i;
+
+class B(A):
+    def __init__(self):
+        super().__init__()
+        print("i from B is", self.i)
+        
+    def setI(self, i):
+        self.i = 3 * i;
+
+b = B()

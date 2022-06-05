@@ -4,10 +4,7 @@ Author: Zhihui Chen
 Due Date: 06/23/2022
 Course: CS1410-X01
 
-Put your description here, lessons learned here, and any other information someone using your
-program would need to know to make it run.
-
-Download concurrently using futures with processes
+This program download imgs concurrently using futures with processes
 """
 
 import requests
@@ -17,6 +14,11 @@ from concurrent.futures import ProcessPoolExecutor
 
 
 def download_img(flag):
+    """
+    flag: str, name of country flag
+    download img
+    return int, img size
+    """
     url = f"https://www.sciencekids.co.nz/images/pictures/flags96/{flag}.jpg"
     img = requests.get(url).content
     with open(f"G_proc/{flag}.jpg", "wb") as img_f:
@@ -26,7 +28,14 @@ def download_img(flag):
 
 def main():
     """
-    Program starts here.
+    if G_proc folder does not exist, create it
+
+    read flags.txt file,
+    Use ProcessPoolExecutor to download imgs at the same time
+        instead of waiting for one img to finish downloading
+    save total download img size
+
+    write result to G_proc_result.txt
     """
     if not os.path.exists("G_proc"):
         os.makedirs("G_proc")
@@ -34,10 +43,10 @@ def main():
     with open("flags.txt", "r", encoding="utf-8") as flag_f:
         flags = [flag.strip() for flag in flag_f]
 
-        time_start = time.perf_counter()
-        with ProcessPoolExecutor() as executor:
-            img_bytes = sum(executor.map(download_img, flags))
-        time_stop = time.perf_counter()
+    time_start = time.perf_counter()
+    with ProcessPoolExecutor() as executor:
+        img_bytes = sum(executor.map(download_img, flags))
+    time_stop = time.perf_counter()
 
     with open("G_proc_result.txt", "w", encoding="utf-8") as result_f:
         result_f.write(f"Elapsed time: {(time_stop - time_start):.8f}\n")
