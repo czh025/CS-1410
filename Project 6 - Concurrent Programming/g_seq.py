@@ -4,19 +4,24 @@ Author: Zhihui Chen
 Due Date: 06/23/2022
 Course: CS1410-X01
 
-This program download imgs sequentially (no concurrency)
+I declare that the following source code was written solely by me.
+    I understand that copying any source code, in whole or in part, constitutes cheating, and that
+    I will receive a zero on this project if I am found in violation of this policy.
+
+This program download img sequentially (no concurrency)
 """
 
-import requests
 import time
 import os
+import requests  # pylint: disable=import-error
 
 
 def download_img(flag):
-    """
-    flag: str, name of country flag
-    download img
-    return int, img size
+    """Only do download img.
+
+    :param str flag: name of country flag
+    :return: size of the img
+    :rtype: int
     """
     url = f"https://www.sciencekids.co.nz/images/pictures/flags96/{flag}.jpg"
     img = requests.get(url).content
@@ -26,15 +31,15 @@ def download_img(flag):
 
 
 def main():
-    """
-    if G_seq folder does not exist, create it
+    """Download img and record time
 
-    read flags.txt file,
+    Read flags.txt file,
     save total download img size
     write result to G_seq_result.txt
     """
     img_bytes = 0
 
+    # if G_seq folder does not exist, create it
     if not os.path.exists("G_seq"):
         os.makedirs("G_seq")
 

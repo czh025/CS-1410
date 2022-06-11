@@ -1,2 +1,2 @@
-Elapsed time: 3.57568042
+Elapsed time: 5.46600225
 415388 bytes downloaded

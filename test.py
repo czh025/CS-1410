@@ -1,16 +1,28 @@
-class A:
+import collections
+
+Card = collections.namedtuple('Card', ['rank', 'suit'])
+
+class FrenchDeck:
+    ranks = [str(n) for n in range(2, 11)] + list('JQKA')
+    suits = 'spades diamonds clubs hearts'.split()
+
     def __init__(self):
-        self.setI(10)
+        self._cards = [Card(rank, suit) for suit in self.suits
+                                        for rank in self.ranks]
 
-    def setI(self, i):
-        self.i = 2 * i;
+    def __len__(self):
+        return len(self._cards)
 
-class B(A):
-    def __init__(self):
-        super().__init__()
-        print("i from B is", self.i)
-        
-    def setI(self, i):
-        self.i = 3 * i;
+    def __getitem__(self, position):
+        return self._cards[position]
 
-b = B()
+deck = FrenchDeck()
+# print(deck[0])
+
+suit_values = dict(spades=3, hearts=2, diamonds=1, clubs=0)
+def spades_high(card):
+    rank_value = FrenchDeck.ranks.index(card.rank)
+    return rank_value * len(suit_values) + suit_values[card.suit]
+
+for card in sorted(deck, key=spades_high):
+    print(card)
