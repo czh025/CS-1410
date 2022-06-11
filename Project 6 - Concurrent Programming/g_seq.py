@@ -32,14 +32,9 @@ def download_img(flag):
 
 def main():
     """Download img and record time
-
-    Read flags.txt file,
-    save total download img size
-    write result to G_seq_result.txt
     """
     img_bytes = 0
 
-    # if G_seq folder does not exist, create it
     if not os.path.exists("G_seq"):
         os.makedirs("G_seq")
 

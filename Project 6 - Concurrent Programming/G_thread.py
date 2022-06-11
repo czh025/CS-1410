@@ -33,12 +33,7 @@ def download_img(flag):
 
 def main():
     """Download img with ThreadPoolExecutor and record time
-
-    Read flags.txt file,
-    save total download img size
-    write result to G_thread_result.txt
     """
-    # if G_thread folder does not exist, create it
     if not os.path.exists("G_thread"):
         os.makedirs("G_thread")
 

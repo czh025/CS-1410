@@ -33,12 +33,7 @@ def download_img(flag):
 
 def main():
     """Download img with ProcessPoolExecutor and record time
-
-    Read flags.txt file,
-    save total download img size
-    write result to G_thread_result.txt
     """
-    # if G_proc folder does not exist, create it
     if not os.path.exists("G_proc"):
         os.makedirs("G_proc")
 
