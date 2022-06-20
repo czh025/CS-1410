@@ -8,11 +8,12 @@ I declare that the following source code was written solely by me.
     I understand that copying any source code, in whole or in part, constitutes cheating, and that
     I will receive a zero on this project if I am found in violation of this policy.
 
-This program download img sequentially (no concurrency)
+This program download img concurrently using futures with threads
 """
 
 import time
 import os
+from concurrent.futures import ThreadPoolExecutor
 import requests  # pylint: disable=import-error
 
 
@@ -25,26 +26,26 @@ def download_img(flag):
     """
     url = f"https://www.sciencekids.co.nz/images/pictures/flags96/{flag}.jpg"
     img = requests.get(url).content
-    with open(f"G_seq/{flag}.jpg", "wb") as img_f:
+    with open(f"cia_c_flags/{flag}.jpg", "wb") as img_f:
         img_f.write(img)
     return len(img)
 
 
 def main():
-    """Download img and record time
+    """Download img with ThreadPoolExecutor and record time
     """
-    img_bytes = 0
-
-    if not os.path.exists("G_seq"):
-        os.makedirs("G_seq")
+    if not os.path.exists("cia_c_flags"):
+        os.makedirs("cia_c_flags")
 
     with open("flags.txt", "r", encoding="utf-8") as flag_f:
-        time_start = time.perf_counter()
-        for flag in flag_f:
-            img_bytes += download_img(flag.strip())
-        time_stop = time.perf_counter()
+        flags = [flag.strip() for flag in flag_f]
 
-    with open("G_seq_result.txt", "w", encoding="utf-8") as result_f:
+    time_start = time.perf_counter()
+    with ThreadPoolExecutor() as executor:
+        img_bytes = sum(executor.map(download_img, flags))
+    time_stop = time.perf_counter()
+
+    with open("cia_c_result.txt", "w", encoding="utf-8") as result_f:
         result_f.write(f"Elapsed time: {(time_stop - time_start):.8f}\n")
         result_f.write(f"{img_bytes} bytes downloaded")
 

@@ -1,28 +1,27 @@
-import collections
+"""
+metro_lat_long.py
 
-Card = collections.namedtuple('Card', ['rank', 'suit'])
+Demonstration of nested tuple unpacking::
 
-class FrenchDeck:
-    ranks = [str(n) for n in range(2, 11)] + list('JQKA')
-    suits = 'spades diamonds clubs hearts'.split()
+    >>> main()
+                    |  latitude | longitude
+    Mexico City     |   19.4333 |  -99.1333
+    New York-Newark |   40.8086 |  -74.0204
+    São Paulo       |  -23.5478 |  -46.6358
 
-    def __init__(self):
-        self._cards = [Card(rank, suit) for suit in self.suits
-                                        for rank in self.ranks]
+"""
 
-    def __len__(self):
-        return len(self._cards)
+# tag::MAIN[]
+phone = ["3852075000", "15980101010"]
 
-    def __getitem__(self, position):
-        return self._cards[position]
+def main():
+    for record in phone:
+        match tuple(record):  # <1>
+            case ["1", *rest]:  # <2>
+                print("China", rest)
+            case ["3", *rest]:
+                print("America", rest)
+# end::MAIN[]
 
-deck = FrenchDeck()
-# print(deck[0])
-
-suit_values = dict(spades=3, hearts=2, diamonds=1, clubs=0)
-def spades_high(card):
-    rank_value = FrenchDeck.ranks.index(card.rank)
-    return rank_value * len(suit_values) + suit_values[card.suit]
-
-for card in sorted(deck, key=spades_high):
-    print(card)
+if __name__ == '__main__':
+    main()

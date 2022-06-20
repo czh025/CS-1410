@@ -26,7 +26,7 @@ def download_img(flag):
     """
     url = f"https://www.sciencekids.co.nz/images/pictures/flags96/{flag}.jpg"
     img = requests.get(url).content
-    with open(f"G_proc/{flag}.jpg", "wb") as img_f:
+    with open(f"cia_b_flags/{flag}.jpg", "wb") as img_f:
         img_f.write(img)
     return len(img)
 
@@ -34,8 +34,8 @@ def download_img(flag):
 def main():
     """Download img with ProcessPoolExecutor and record time
     """
-    if not os.path.exists("G_proc"):
-        os.makedirs("G_proc")
+    if not os.path.exists("cia_b_flags"):
+        os.makedirs("cia_b_flags")
 
     with open("flags.txt", "r", encoding="utf-8") as flag_f:
         flags = [flag.strip() for flag in flag_f]
@@ -45,7 +45,7 @@ def main():
         img_bytes = sum(executor.map(download_img, flags))
     time_stop = time.perf_counter()
 
-    with open("G_proc_result.txt", "w", encoding="utf-8") as result_f:
+    with open("cia_b_result.txt", "w", encoding="utf-8") as result_f:
         result_f.write(f"Elapsed time: {(time_stop - time_start):.8f}\n")
         result_f.write(f"{img_bytes} bytes downloaded")
 
